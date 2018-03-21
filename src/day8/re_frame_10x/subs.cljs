@@ -551,13 +551,35 @@
   prepare-pod-info)
 
 (rf/reg-sub
-  :subs/visible-subs
-  :<- [:subs/all-subs]
-  :<- [:subs/ignore-unchanged-l2-subs?]
-  (fn [[all-subs ignore-unchanged-l2?]]
-    (if ignore-unchanged-l2?
-      (remove metam/unchanged-l2-subscription? all-subs)
-      all-subs)))
+ :subs/pinned-subs
+ :<- [:subs/root]
+ (fn [root _]
+   (:pinned-subs root)))
+
+(rf/reg-sub
+ :subs/pinned?
+ :<- [:subs/pinned-subs]
+ (fn [pinned [_ id]]
+   ((set pinned) id)))
+
+(rf/reg-sub
+ :subs/sorted-subs
+ :<- [:subs/all-subs]
+ :<- [:subs/pinned-subs]
+ (fn [[all-subs pinned-subs]]
+   (let [is-pinned? (comp (set pinned-subs) :id)]
+     (if (not-empty pinned-subs)
+       (into (filter is-pinned? all-subs) (remove is-pinned? all-subs))
+       all-subs))))
+
+(rf/reg-sub
+ :subs/visible-subs
+ :<- [:subs/sorted-subs]
+ :<- [:subs/ignore-unchanged-l2-subs?]
+ (fn [[sorted-subs ignore-unchanged-l2?]]
+   (if ignore-unchanged-l2?
+     (remove metam/unchanged-l2-subscription? sorted-subs)
+     sorted-subs)))
 
 (rf/reg-sub
   :subs/sub-counts

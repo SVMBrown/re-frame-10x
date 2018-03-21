@@ -174,7 +174,16 @@
                                     [rc/link {:label "?"
                                               :style {:margin "auto"}
                                               :href  "https://github.com/Day8/re-frame-10x/blob/master/docs/HyperlinkedInformation/UnchangedLayer2.md#why-do-i-sometimes-see-layer--when-viewing-a-subscription"}])]]]
-
+              [pod-header-section
+               :width "50px"
+               :attr     {:on-click #(rf/dispatch [:subs/toggle-pinned id])}
+               :children [[rc/box
+                           :style {:margin "auto"}
+                           :child [rc/checkbox
+                                   :model @(rf/subscribe [:subs/pinned? id])
+                                   :label ""
+                                   :style {:margin-left "6px"
+                                           :margin-top  "1px"}]]]]
               [pod-header-section
                :width "50px"
                :attr     {:on-click (handler-fn (rf/dispatch [:subs/set-diff-visibility id (not diff?)]))}
@@ -314,6 +323,10 @@
                :width "32px" ;; common/gs-31s + 1 border
                :justify :center
                :child [rc/label :style {:font-size "9px"} :label "LAYER"]]
+              [rc/box
+               :width "51px" ;;  50px + 1 border
+               :justify :center
+               :child [rc/label :style {:font-size "9px"} :label "PINS"]]
               [rc/box
                :width "51px" ;;  50px + 1 border
                :justify :center

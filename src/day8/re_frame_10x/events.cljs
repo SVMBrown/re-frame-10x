@@ -669,6 +669,13 @@
           ;; If we turn on diffing then we want to also expand the path
           (assoc-in [id :open?] open?)))))
 
+(rf/reg-event-db
+ :subs/toggle-pinned
+ [(rf/path [:subs :pinned-subs])]
+ (fn [pinned [_ id]]
+   (if (contains? (set pinned) id)
+     (remove #(= id %) (or pinned []))
+     (conj (or pinned []) id))))
 ;;
 
 (rf/reg-event-db
